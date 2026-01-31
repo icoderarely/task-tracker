@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"text/tabwriter"
 	"time"
 )
 
@@ -266,16 +267,24 @@ func printTasks(tasks []Task) {
 		return
 	}
 
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+
+	// header
+	fmt.Fprintln(w, "ID\tDESCRIPTION\tSTATUS\tCREATED\tMODIFIED")
+
 	for _, t := range tasks {
-		fmt.Printf(
-			"[%d] %s | %s | created: %s | modified: %s\n",
-			t.ID,
-			t.Desc,
-			t.Status,
-			t.CreatedAt.Format("2006-01-02"),
-			t.UpdatedAt.Format("2006-01-02"),
-		)
+		fmt.
+			Fprintf(
+				w,
+				"%d\t%s\t%s\t%s\t%s\n",
+				t.ID,
+				t.Desc,
+				t.Status,
+				t.CreatedAt.Format("02/01 15:04"),
+				t.UpdatedAt.Format("02/01 15:04"),
+			)
 	}
+	w.Flush()
 }
 
 func ListTask(list string) {
@@ -311,7 +320,7 @@ func ListTask(list string) {
 				filtered = append(filtered, t)
 			}
 		}
-	case "in-progress":
+	case "doing":
 		for _, t := range tasks {
 			if t.Status == "in-progress" {
 				filtered = append(filtered, t)
@@ -336,8 +345,10 @@ func main() {
 	deleteFlag := flag.NewFlagSet("delete", flag.ExitOnError)
 	markFlag := flag.NewFlagSet("mark", flag.ExitOnError)
 	listFlag := flag.NewFlagSet("list", flag.ExitOnError)
+	_ = listFlag
+	_ = addFlag
 
-	addTask := addFlag.String("task", "", "Add a new task")
+	// addTask := addFlag.String("task", "", "Add a new task")
 
 	lastIndex := calcLastIndex()
 	updateTaskID := updateFlag.Int64("id", lastIndex, "Id of which you want to update task for")
@@ -348,7 +359,7 @@ func main() {
 	markTaskID := markFlag.Int64("id", lastIndex, "id of which you want to change the task progress for")
 	markTask := markFlag.String("mark", "in-progress", "is it in-progress or done")
 
-	listTask := listFlag.String("list", "", "empty, done, todo, in-progress")
+	// listTask := listFlag.String("list", "", "empty, done, todo, in-progress")
 
 	// check if args specified or not
 	if len(os.Args) < 2 {
@@ -358,20 +369,34 @@ func main() {
 
 	switch os.Args[1] {
 	case "add":
-		addFlag.Parse(os.Args[2:])
-		WriteTask(*addTask)
+		// addFlag.Parse(os.Args[2:])
+		// WriteTask(*addTask)
+		if len(os.Args) < 3 {
+			fmt.Println(`write your "task you want to do"`)
+		}
+		WriteTask(os.Args[2])
+
 	case "update":
 		updateFlag.Parse(os.Args[2:])
 		UpdateTask(*updateTaskID, *updateTaskMsg)
+
 	case "delete":
 		deleteFlag.Parse(os.Args[2:])
 		DeleteTask(*deleteTaskID)
+
 	case "mark":
 		markFlag.Parse(os.Args[2:])
 		MarkTask(*markTaskID, *markTask)
+
 	case "list":
-		listFlag.Parse(os.Args[2:])
-		ListTask(*listTask)
+		var listType string
+		if len(os.Args) < 3 {
+			listType = ""
+		} else {
+			listType = os.Args[2]
+		}
+		ListTask(listType)
+
 	default:
 		fmt.Println("no/wrong subcmd entered")
 		os.Exit(1)
