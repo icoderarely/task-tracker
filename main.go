@@ -273,16 +273,15 @@ func printTasks(tasks []Task) {
 	fmt.Fprintln(w, "ID\tDESCRIPTION\tSTATUS\tCREATED\tMODIFIED")
 
 	for _, t := range tasks {
-		fmt.
-			Fprintf(
-				w,
-				"%d\t%s\t%s\t%s\t%s\n",
-				t.ID,
-				t.Desc,
-				t.Status,
-				t.CreatedAt.Format("02/01 15:04"),
-				t.UpdatedAt.Format("02/01 15:04"),
-			)
+		fmt.Fprintf(
+			w,
+			"%d\t%s\t%s\t%s\t%s\n",
+			t.ID,
+			t.Desc,
+			t.Status,
+			t.CreatedAt.Format("02/01 15:04"),
+			t.UpdatedAt.Format("02/01 15:04"),
+		)
 	}
 	w.Flush()
 }

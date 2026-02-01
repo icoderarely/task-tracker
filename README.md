@@ -50,7 +50,7 @@ The tool uses subcommands to perform operations. Here are the available commands
 - Add a task:
 
   ```bash
-  ./task-tracker add -task "Your task description"
+  ./task-tracker add "Your task description"
   ```
 
 - List all tasks:
@@ -62,7 +62,9 @@ The tool uses subcommands to perform operations. Here are the available commands
 - List tasks by status (e.g., done, todo, in-progress):
 
   ```bash
-  ./task-tracker list -list "done"
+  ./task-tracker list done
+  ./task-tracker list todo
+  ./task-tracker list doing
   ```
 
 - Update a task:
